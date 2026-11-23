@@ -1,10 +1,22 @@
 ** Drc report for out/hub/hub.kicad_pcb **
-** Created on 2026-11-23 17:00:05 **
+** Created on 2026-11-23 17:58:18 **
 
 ** Found 12 DRC violations **
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(25.5000 mm, 18.5000 mm): Footprint J4
+    @(22.5000 mm, 13.6000 mm): Footprint C3
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(13.0000 mm, 13.5000 mm): Footprint C4
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(13.0000 mm, 9.5000 mm): Footprint C2
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(15.0000 mm, 3.5000 mm): Footprint J1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(6.5000 mm, 18.5000 mm): Footprint J2
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
     @(9.5000 mm, 13.5000 mm): Footprint FB1
@@ -13,31 +25,19 @@
     @(18.5000 mm, 11.0000 mm): Footprint U1
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(13.0000 mm, 9.5000 mm): Footprint C2
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
     @(9.5000 mm, 9.5000 mm): Footprint C1
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
-    @(22.5000 mm, 13.6000 mm): Footprint C3
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
-    @(3.2000 mm, 10.0000 mm): Footprint H1
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
-    @(16.5000 mm, 18.5000 mm): Footprint J3
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
-    @(15.0000 mm, 3.5000 mm): Footprint J1
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
     @(26.8000 mm, 10.0000 mm): Footprint H2
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(6.5000 mm, 18.5000 mm): Footprint J2
+    @(16.5000 mm, 18.5000 mm): Footprint J3
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(13.0000 mm, 13.5000 mm): Footprint C4
+    @(25.5000 mm, 18.5000 mm): Footprint J4
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(3.2000 mm, 10.0000 mm): Footprint H1
 
 ** Found 0 unconnected pads **
 

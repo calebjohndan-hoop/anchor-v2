@@ -1,23 +1,43 @@
 ** Drc report for out/mic/mic.kicad_pcb **
-** Created on 2026-11-23 17:00:05 **
+** Created on 2026-11-23 18:10:43 **
 
-** Found 6 DRC violations **
-[lib_footprint_issues]: The current configuration does not include the library ''.
+** Found 12 DRC violations **
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(5.4250 mm, 1.1500 mm): Line on F.Silkscreen
+    @(5.3700 mm, 2.5000 mm): Reference 'C1'
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(7.3700 mm, 3.0000 mm): Reference 'R1'
+    @(7.3100 mm, 2.6406 mm): Line on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(9.3225 mm, 3.2373 mm): Line on F.Silkscreen
+    @(9.1700 mm, 3.0000 mm): Reference 'R2'
+[silk_over_copper]: Silkscreen clipped by solder mask
     Local override; Severity: warning
-    @(8.6000 mm, 1.5000 mm): Footprint C1
-[lib_footprint_issues]: The current configuration does not include the library ''.
+    @(7.3700 mm, 3.0000 mm): Reference 'R1'
+[silk_over_copper]: Silkscreen clipped by solder mask
     Local override; Severity: warning
-    @(8.6000 mm, 4.6000 mm): Footprint JP1
+    @(9.1700 mm, 3.0000 mm): Reference 'R2'
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(5.3700 mm, 2.5000 mm): Reference 'C1'
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
     @(4.0000 mm, 3.0000 mm): Footprint U1
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
+    @(8.8000 mm, 3.0000 mm): Footprint R1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(10.6000 mm, 3.0000 mm): Footprint R2
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(6.8000 mm, 2.5000 mm): Footprint C1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
     @(6.0000 mm, 9.9000 mm): Footprint J1
-[silk_edge_clearance]: Silkscreen clipped by board edge
-    Rule: board setup constraints silk; Severity: warning
-    @(2.0000 mm, 0.0000 mm): Line on Edge.Cuts
-    @(8.6000 mm, 0.0700 mm): Reference 'C1'
 [silk_edge_clearance]: Silkscreen clipped by board edge
     Rule: board setup constraints silk; Severity: warning
     @(2.0000 mm, 0.0000 mm): Line on Edge.Cuts

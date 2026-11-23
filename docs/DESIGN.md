@@ -76,29 +76,34 @@ v1's delay was mostly buffering: audio was processed in blocks, and each block a
 
 | Stage | v2 plan |
 |---|---|
-| Sample rate | 32 kHz |
-| Block size | 8 samples (0.25 ms per block) |
-| Input and output buffering | about 2 blocks (0.5 ms) |
+| Sample rate | 16 kHz (same as v1; the AI model needs 16 kHz) |
+| Block size | 8 samples (0.5 ms per block, same as v1 sketch 09) |
+| Input and output buffering | about 3 blocks (1.5 ms) |
 | Mic and amp internal filters | to be measured |
-| **Target total** | **under 1 ms** |
+| **Target total** | **under 2 ms, measured with v1's delay test** |
 
-Compute check: two ears, a 128-tap control filter and a 64-tap secondary path model is about 320 multiply-adds per sample per ear. That is about 20 million per second at 32 kHz, which should fit on one core of the 240 MHz ESP32-S3. The classifier runs on the other core. This is an estimate; Test T1 confirms it.
+Compute check: the v1 cancelling engine does about 800 multiply-adds per sample. Two ears at 16 kHz is about 26 million per second, so each ear gets its own core (left on core 1, right on core 0 with the AI at lower priority). The firmware prints each ear's load every second; Test T1 confirms it.
 
 ## 6. Pin map (ESP32-S3-WROOM-1-N16R8)
+
+**Each ear is wired exactly like v1, on its own I2S port.** That way the v1 firmware, the cancelling engine and the trained AI carry over unchanged: on each port the REF mic talks in the left slot (L/R low), the ERR mic in the right slot (L/R high), and the amp plays the same sound on both slots.
 
 ![I2S wiring](images/wiring-i2s.png)
 
 | GPIO | Net | Direction | Notes |
 |---|---|---|---|
-| 5 | I2S_BCLK | out | Same pin as v1. Also read by I2S1 as a slave clock |
-| 6 | I2S_WS | out | Same pin as v1 |
-| 7 | I2S_DOUT | out | To both amps' DIN, same pin as v1 |
-| 15 | I2S0_DIN (REF) | in | REF_L on the left slot, REF_R on the right slot. Same pin as v1 |
-| 16 | I2S1_DIN (ERR) | in | ERR_L on the left slot, ERR_R on the right slot |
-| 8 | AMP_SD | out | Low mutes both amps. Through 10 kΩ to AMP_L (left channel), through 220 kΩ to AMP_R (right channel) |
-| 4 | BUTTON | in | To GND, internal pull-up |
-| 47 | LED_STATUS | out | Through resistor |
-| 48 | LED_MODE | out | Through resistor |
+| 5 | LEFT BCLK (I2S0) | out | Same as v1 |
+| 6 | LEFT WS (I2S0) | out | Same as v1 |
+| 7 | LEFT DOUT (I2S0) | out | Left MAX98357A, same as v1 |
+| 15 | LEFT DIN (I2S0) | in | REF L (left slot) + ERR L (right slot), same as v1 |
+| 17 | RIGHT BCLK (I2S1) | out | Over the headband cable, 33 Ω series resistor |
+| 18 | RIGHT WS (I2S1) | out | Over the headband cable, 33 Ω series resistor |
+| 21 | RIGHT DOUT (I2S1) | out | Right MAX98357A on the hub |
+| 16 | RIGHT DIN (I2S1) | in | REF R (left slot) + ERR R (right slot) |
+| 8 | AMP_SD | out | 10 kΩ pull-up, so both amps are on by default (v1 firmware works); drive low to mute |
+| 4 | BUTTON | in | To GND, pull-up |
+| 47 | LED_STATUS | out | Through 1 kΩ |
+| 48 | LED_MODE | out | Through 1 kΩ |
 | 1 | VBAT_SENSE | analog in | 100 kΩ / 100 kΩ divider from battery |
 | 2 | CHG_STAT | in | MCP73831 STAT pin through a 10 kΩ / 20 kΩ divider (STAT swings to 5 V) |
 | 19, 20 | USB D-, D+ | USB | Native USB, used for flashing and serial |
@@ -108,9 +113,9 @@ Compute check: two ears, a 128-tap control filter and a 64-tap secondary path mo
 
 **Do not use:** GPIO 26 to 32 (flash), GPIO 33 to 37 (octal PSRAM on the R8 module), and strapping pins 3, 45 and 46.
 
-**To check in the datasheets before layout:**
-- The MAX98357A SD_MODE voltage windows that pick left or right channel. The 10 kΩ and 220 kΩ values assume its internal 100 kΩ pull-down: 3.3 V through 10 kΩ gives about 3.0 V (left) and through 220 kΩ gives about 1.0 V (right).
-- That I2S1 can run as a slave on the same BCLK and WS pins that I2S0 drives. Bring-up test B1 proves this on the v1 DevKit before any PCB is ordered.
+**Mic boards:** one PCB, two builds. The REF build has R1 fitted (L/R to GND), the ERR build has R2 fitted (L/R to 3.3 V). JLCPCB assembles both, so nothing needs bridging by hand.
+
+**Headband cable (8-pin JST-SH, pin 1 to pin 1):** 1 3V3, 2 GND, 3 RIGHT BCLK, 4 RIGHT WS, 5 RIGHT DIN, 6 GND, 7 RIGHT DOUT, 8 AMP_SD. Only digital signals cross the headband.
 
 ## 7. Power design
 
@@ -165,9 +170,10 @@ Measurements to take from the earmuff before modelling: cup inner depth, cup inn
 
 ## 10. Firmware plan (Arduino IDE, ESP32 core 3.x)
 
-- **Core 1, audio task:** I2S0 full duplex (amps out, REF mics in) and I2S1 slave input (ERR mics). 32 kHz, 8-sample blocks. Two FxLMS channels. Output limiter caps the level so the speaker can never get dangerously loud.
+- **Firmware is written:** [firmware/v2/11_anchor_v2](../firmware/v2/11_anchor_v2). It is sketch 09 with each ear's state in its own `Ear` object, using the same cancelling engine (`anchor_anc2.h`) and AI files unchanged. It compiles and links for the ESP32-S3 with both the built-in AI and the Edge Impulse library.
+- **Audio tasks:** left ear on core 1, right ear on core 0, each on its own I2S port, 16 kHz, 8-sample blocks. Output limiter caps the level so the speaker can never get dangerously loud.
 - **Start-up calibration:** about 2 seconds of quiet test noise per ear to learn the speaker to ERR mic path. SAFE mode until it passes.
-- **Core 0, classifier:** downsample REF audio to 16 kHz, 1 second windows, four classes. A mode only changes after two windows in a row agree, so it doesn't flicker.
+- **Classifier:** listens to the left REF mic, 1 second windows every 0.5 s, same decision rules as v1. Both ears follow its mode request; each ear calibrates and protects itself.
 - **Training data:** record clips through the v2 headset's own REF mic over USB, so the model learns from the same mic it will hear in use.
 - **Instability guard:** if the ERR mic level rises instead of falling, reset the filter and go to SAFE.
 - **Watchdog:** if the audio task stalls, mute the amps. The earmuff still blocks noise passively.
@@ -177,13 +183,13 @@ Measurements to take from the earmuff before modelling: cup inner depth, cup inn
 ### Before ordering PCBs (on the v1 DevKit and parts)
 | Test | What | Pass |
 |---|---|---|
-| B1 | Run I2S0 as master and I2S1 as slave on the same BCLK and WS, with two INMP441s | Both inputs stay sample-aligned for 10 minutes |
-| B2 | Drop the block size to 8 samples at 32 kHz | Delay measured under 1 ms with no glitches |
+| B1 | Run sketch 11 on the v1 DevKit with the v1 mics on I2S0 and a second pair on I2S1 (pins 17, 18, 21, 16) | Both ears calibrate, no LOST DATA, load under 70% per core |
+| B2 | Run v1 sketch 05 (delay test) on the v2 left ear | Delay at or below v1's 3.5 to 4.5 ms |
 
 ### After assembly
 | Test | What | Pass |
 |---|---|---|
-| T1 | Mic to speaker delay, same method as v1 | Under 1 ms |
+| T1 | Mic to speaker delay, same method as v1 | Under 2 ms |
 | T2 | Sound level meter at the ear cup, steady machine hum, cancelling off then on, each ear | Record the dB difference (no fixed pass mark, the number is reported as measured) |
 | T3 | Play an alarm 10 times over machine noise | Amplified within 1.5 s in at least 8 of 10 |
 | T4 | 10 spoken calls over machine noise | Voice heard clearly in at least 8 of 10 |
@@ -206,8 +212,8 @@ Measurements to take from the earmuff before modelling: cup inner depth, cup inn
 
 | Risk | Effect | Plan |
 |---|---|---|
-| I2S1 slave input does not stay aligned with I2S0 | Two-ear ANC fails | Test B1 first; fallback is a TDM microphone (ICS-52000) on one data line |
-| Delay stays above 1 ms | Cancelling limited to steady hum | Smaller blocks; fallback is a codec (section 4) |
+| Two ears are too much work for the ESP32-S3 | Glitches, LOST DATA | Each ear has its own core; fallback is shorter filters (ANC_NS 192) or cancelling in one ear |
+| Delay stays high | Cancelling limited to steady hum | Smaller blocks; fallback is a codec (section 4) |
 | Long clock lines to the right cup pick up noise | Clicks, wrong samples | Series resistors, ground beside clock, no analog or speaker signals in the cable |
 | Battery life under 8 hours | Not a full shift | Buck-boost regulator, lower clock speed |
 | Classifier wrong on the headset | Alarms missed or noise let through | Train on clips recorded through the headset's own mic |

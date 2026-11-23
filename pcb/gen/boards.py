@@ -26,11 +26,13 @@ def amp(ref, sd, p, n, vdd):
                  "VDD": vdd, "BCLK": "I2S_BCLK", "LRCLK": "I2S_WS", "OUTP": p, "OUTN": n}, mpn="MAX98357AETE+T", lcsc="C910544")
 
 
-CABLE = {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": "I2S_DIN_REF", "6": "I2S_DIN_ERR", "7": "I2S_DOUT", "8": "AMP_R_SD"}
+# headband cable: the right ear's own I2S port (pin 6 is an extra ground beside the clocks)
+CABLE_MAIN = {"1": "+3V3", "2": "GND", "3": "I2S_BCLK_R", "4": "I2S_WS_R", "5": "I2S_DIN_R", "6": "GND", "7": "I2S_DOUT_R", "8": "AMP_R_SD"}
+CABLE_HUB = {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": "I2S_DIN", "6": "GND", "7": "I2S_DOUT", "8": "AMP_SD"}
 
 
-def mic_conn(ref, data):
-    return Part(ref, "Connector_Generic:Conn_01x05", f"JST-SH 5 ({data})", SH5,
+def mic_conn(ref, data, label=None):
+    return Part(ref, "Connector_Generic:Conn_01x05", f"JST-SH 5 ({label or data})", SH5,
                 {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": data}, mpn="SM05B-SRSS-TB")
 
 
@@ -40,8 +42,9 @@ def mic_board():
         Part("U1", "Sensor_Audio:ICS-43434", "ICS-43434", "Sensor_Audio:InvenSense_ICS-43434-6_3.5x2.65mm",
              {"WS": "I2S_WS", "LR": "LR_SEL", "GND": "GND", "SCK": "I2S_BCLK", "VDD": "+3V3", "SD": "I2S_SD"}, mpn="ICS-43434", lcsc="C5656610"),
         C("C1", "100n", "+3V3"),
-        Part("JP1", "Jumper:SolderJumper_3_Open", "L/R: bridge 1-2 left, 2-3 right",
-             "Jumper:SolderJumper-3_P1.3mm_Open_RoundedPad1.0x1.5mm", {"A": "GND", "C": "LR_SEL", "B": "+3V3"}),
+        # one PCB, two builds: REF mic = R1 fitted (L/R low, left slot), ERR mic = R2 fitted (L/R high, right slot)
+        R("R1", "0R (REF build only)", "LR_SEL", "GND"),
+        R("R2", "0R (ERR build only)", "LR_SEL", "+3V3"),
         mic_conn("J1", "I2S_SD"),
     ]
 
@@ -49,13 +52,13 @@ def mic_board():
 # ---------------------------------------------------------------- right cup hub
 def hub_board():
     return [
-        Part("J1", "Connector_Generic:Conn_01x08", "JST-SH 8 to main board", SH8, CABLE, mpn="SM08B-SRSS-TB"),
+        Part("J1", "Connector_Generic:Conn_01x08", "JST-SH 8 to main board", SH8, CABLE_HUB, mpn="SM08B-SRSS-TB"),
         # right amplifier lives here so only digital audio crosses the headband
-        amp("U1", "AMP_R_SD", "SPK_R_P", "SPK_R_N", "AMP_VDD"),
+        amp("U1", "AMP_SD", "SPK_R_P", "SPK_R_N", "AMP_VDD"),
         Part("FB1", "Device:FerriteBead_Small", "600R@100MHz", "Inductor_SMD:L_0603_1608Metric", {"1": "+3V3", "2": "AMP_VDD"}),
         C("C3", "10u", "AMP_VDD"), C("C4", "100n", "AMP_VDD"),
-        mic_conn("J2", "I2S_DIN_REF"),
-        mic_conn("J3", "I2S_DIN_ERR"),
+        mic_conn("J2", "I2S_DIN", "REF R"),
+        mic_conn("J3", "I2S_DIN", "ERR R"),
         Part("J4", "Connector_Generic:Conn_01x02", "Speaker R (JST-SH 2)", SH2, {"1": "SPK_R_P", "2": "SPK_R_N"}, mpn="SM02B-SRSS-TB"),
         C("C1", "10u", "+3V3"),
         C("C2", "100n", "+3V3"),
@@ -68,9 +71,10 @@ def hub_board():
 def main_board():
     esp = {"GND": "GND", "3V3": "+3V3", "EN": "EN", "IO0": "BOOT", "IO1": "VBAT_SENSE", "IO2": "CHG_STAT",
            "IO4": "BUTTON", "IO5": "BCLK_MCU", "IO6": "WS_MCU", "IO7": "I2S_DOUT", "IO8": "AMP_SD",
-           "IO15": "I2S_DIN_REF", "IO16": "I2S_DIN_ERR", "IO19": "USB_DN", "IO20": "USB_DP",
+           "IO15": "I2S_DIN_L", "IO16": "I2S_DIN_R", "IO17": "BCLK_R_MCU", "IO18": "WS_R_MCU", "IO21": "I2S_DOUT_R",
+           "IO19": "USB_DN", "IO20": "USB_DP",
            "IO47": "LED1", "IO48": "LED2", "TXD0": "TXD0", "RXD0": "RXD0"}
-    for n in ["IO3", "IO9", "IO10", "IO11", "IO12", "IO13", "IO14", "IO17", "IO18", "IO21", "IO35", "IO36", "IO37",
+    for n in ["IO3", "IO9", "IO10", "IO11", "IO12", "IO13", "IO14", "IO35", "IO36", "IO37",
               "IO38", "IO39", "IO40", "IO41", "IO42", "IO45", "IO46"]:
         esp[n] = None
 
@@ -122,14 +126,16 @@ def main_board():
         # I2S clocks with series resistors (long run to the right cup)
         R("R9", "33", "BCLK_MCU", "I2S_BCLK"), R("R10", "33", "WS_MCU", "I2S_WS"),
         # amplifiers: SD_MODE level picks the channel (10k = left, 220k = right, low = shutdown)
-        R("R11", "10k", "AMP_SD", "AMP_L_SD"), R("R12", "220k", "AMP_SD", "AMP_R_SD"),
+        R("R11", "10k", "AMP_SD", "AMP_L_SD"), R("R12", "10k", "AMP_SD", "AMP_R_SD"),
+        R("R19", "10k", "AMP_SD", "+3V3"),   # amps on by default (v1 firmware never drives GPIO 8)
+        R("R20", "33", "BCLK_R_MCU", "I2S_BCLK_R"), R("R21", "33", "WS_R_MCU", "I2S_WS_R"),
         amp("U5", "AMP_L_SD", "SPK_L_P", "SPK_L_N", "VSYS"),
         C("C9", "10u", "VSYS"), C("C10", "100n", "VSYS"),
         # connectors
         Part("J3", "Connector_Generic:Conn_01x02", "Speaker L (JST-SH 2)", SH2, {"1": "SPK_L_P", "2": "SPK_L_N"}, mpn="SM02B-SRSS-TB"),
-        mic_conn("J4", "I2S_DIN_REF"),
-        mic_conn("J5", "I2S_DIN_ERR"),
-        Part("J6", "Connector_Generic:Conn_01x08", "JST-SH 8 to right cup", SH8, CABLE, mpn="SM08B-SRSS-TB"),
+        mic_conn("J4", "I2S_DIN_L", "REF L"),
+        mic_conn("J5", "I2S_DIN_L", "ERR L"),
+        Part("J6", "Connector_Generic:Conn_01x08", "JST-SH 8 to right cup", SH8, CABLE_MAIN, mpn="SM08B-SRSS-TB"),
         Part("H1", "Mechanical:MountingHole", "M2", MH, {}), Part("H2", "Mechanical:MountingHole", "M2", MH, {}),
     ]
 
