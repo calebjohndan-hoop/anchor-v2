@@ -27,4 +27,6 @@ Change the numbers, run `python anchor_cad.py`, and new STEP and STL files are w
 
 ## Onshape
 
-In Onshape: **Create > Import files** and pick the STEP files from `step/`. Each one comes in as a part.
+All six parts are imported into this public Onshape document, one Part Studio each: [ANCHOR v2 enclosure](https://cad.onshape.com/documents/01ac43861da2c203e8e859be).
+
+After changing the parameters, re-import the new STEP files with **Create > Import files**.

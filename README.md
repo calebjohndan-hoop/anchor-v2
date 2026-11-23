@@ -47,7 +47,7 @@ Three KiCad 7 boards: the main board (51 x 38 mm, left cup), a mic board (12 x 1
 
 ### 3D model
 
-Enclosure parts are parametric CadQuery models ([cad/anchor_cad.py](cad/anchor_cad.py)) with STEP files for Onshape or any CAD tool. Cup sizes are placeholders until the earmuff is measured.
+Enclosure parts are parametric CadQuery models ([cad/anchor_cad.py](cad/anchor_cad.py)) with STEP files, also imported into [Onshape](https://cad.onshape.com/documents/01ac43861da2c203e8e859be). Cup sizes are placeholders until the earmuff is measured.
 
 ![Enclosure parts](docs/images/cad-parts.png)
 
