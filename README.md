@@ -85,6 +85,6 @@ Prices are estimates and will be replaced with the real cart prices before revie
 | [PETG filament 1 kg](https://www.amazon.in/s?k=PETG+filament+1kg+1.75mm) | 1 | 15.00 | 15.00 | Amazon.in | Requested |
 | [UNI-T UT353 sound level meter](https://probots.co.in/ut353-mini-sound-meter-uni-t-audio-noise-decibel-measurement.html) | 1 | 25.00 | 25.00 | Probots | Requested |
 | [Heat shrink and spiral cable wrap](https://www.amazon.in/s?k=heat+shrink+tube+kit) | 1 | 3.00 | 3.00 | Amazon.in | Requested |
-| Soldering iron, multimeter | 1 | 0.00 | 0.00 |  | Already own |
+| Soldering iron, multimeter | 1 | 0.00 | 0.00 |  | Requested |
 | **Total** |  |  | **195.30** |  |  |
 | **Grant total** |  |  | **195.30** |  |  |
