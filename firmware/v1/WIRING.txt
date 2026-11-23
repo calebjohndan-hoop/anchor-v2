@@ -1,0 +1,11 @@
+Wiring (one I2S port shared by everything):
+  GPIO 5  -> BCLK of MAX98357A + SCK of both mics
+  GPIO 6  -> LRCLK of MAX98357A + WS of both mics
+  GPIO 7  -> DIN of MAX98357A
+  GPIO 15 <- SD of both mics (joined)
+  3V3 -> VDD of both mics                5V -> MAX98357A VIN
+  GND -> all GND pins
+  REF (outside) mic L/R -> GND           ERR (inside) mic L/R -> 3.3 V
+  MAX98357A: SD -> its VIN, GAIN -> its VIN (6 dB, quietest)
+  Speaker: the two wires into the MAX98357A screw terminal ONLY (never to GND)
+  All sketches start at OUT_VOLUME 20. The MAX98357A is loud - raise slowly.

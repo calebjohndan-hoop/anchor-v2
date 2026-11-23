@@ -1,0 +1,26 @@
+Part,Type,Quantity,Unit price (USD),Line total (USD),Link,Vendor,Funding,Notes
+ESP32-S3-WROOM-1-N16R8 module,Part,2,5.50,11.00,https://www.lcsc.com/product-detail/C2913202.html,LCSC / JLCPCB,Requested,"Main board MCU, 1 per headset + 1 spare board (price is an estimate; replace with your cart price)"
+MAX98357AETE+T I2S class D amplifier,Part,4,2.00,8.00,https://www.lcsc.com/product-image/C910544.html,LCSC / JLCPCB,Requested,2 per main board (price is an estimate; replace with your cart price)
+ICS-43434 I2S MEMS microphone,Part,10,2.50,25.00,https://www.lcsc.com/product-detail/C5656610.html,LCSC / JLCPCB,Requested,4 per headset + spares (mic boards panelized) (price is an estimate; replace with your cart price)
+TP4056 LiPo charger IC,Part,2,0.20,0.40,https://www.lcsc.com/search?q=TP4056,LCSC / JLCPCB,Requested,Battery charging (price is an estimate; replace with your cart price)
+AP2112K-3.3 LDO regulator,Part,2,0.20,0.40,https://www.lcsc.com/search?q=AP2112K-3.3TRG1,LCSC / JLCPCB,Requested,3.3 V rail (price is an estimate; replace with your cart price)
+USBLC6-2SC6 USB ESD protection,Part,2,0.20,0.40,https://www.lcsc.com/search?q=USBLC6-2SC6,LCSC / JLCPCB,Requested,USB data line protection (price is an estimate; replace with your cart price)
+USB-C 16-pin receptacle,Part,2,0.30,0.60,https://www.lcsc.com/search?q=TYPE-C%2016PIN,LCSC / JLCPCB,Requested,Charging and flashing (price is an estimate; replace with your cart price)
+DMG2305UX P-MOSFET + SS14 Schottky (load sharing),Part,2,0.20,0.40,https://www.lcsc.com/search?q=DMG2305UX,LCSC / JLCPCB,Requested,Runs from USB while charging (price is an estimate; replace with your cart price)
+JST-SH 5-pin SMD connector,Part,14,0.15,2.10,https://www.lcsc.com/search?q=SM05B-SRSS-TB,LCSC / JLCPCB,Requested,Mic boards and main board mic sockets (price is an estimate; replace with your cart price)
+"Passives (resistors, capacitors) lot",Part,1,3.00,3.00,https://www.lcsc.com/search?q=0402%20resistor,LCSC / JLCPCB,Requested,Per JLCPCB assembly BOM (price is an estimate; replace with your cart price)
+"Buttons, slide switch, LEDs",Part,1,2.00,2.00,https://www.lcsc.com/search?q=tactile%20switch,LCSC / JLCPCB,Requested,"Boot, reset, mode button, power switch, 2 LEDs (price is an estimate; replace with your cart price)"
+"PCB fabrication: main, mic, hub boards (5 each)",Service,1,8.00,8.00,https://jlcpcb.com/,JLCPCB,Requested,"2-layer, 3 designs (price is an estimate; replace with your cart price)"
+"PCB assembly fees (setup, stencil, extended part fees)",Service,1,35.00,35.00,https://jlcpcb.com/,JLCPCB,Requested,Main and mic boards assembled; hub hand soldered (price is an estimate; replace with your cart price)
+Shipping and import duty to India,Service,1,25.00,25.00,https://jlcpcb.com/,JLCPCB,Requested,"Estimate, depends on courier (price is an estimate; replace with your cart price)"
+3.7 V 1000 mAh LiPo (KP 503450) with protection,Part,2,4.00,8.00,https://www.theengineerstore.in/products/3-7v-1000mah-lithium-polymer-lipo-rechargeable-battery-model-kp-503450,The Engineer Store,Requested,1 per headset + 1 spare (price is an estimate; replace with your cart price)
+40 mm 32 ohm headphone driver,Part,4,3.00,12.00,https://www.amazon.in/s?k=40mm+32+ohm+headphone+driver,Amazon.in,Requested,2 per headset + 2 spare; replace with exact listing (price is an estimate; replace with your cart price)
+"8-core thin cable, 1 m",Part,1,3.00,3.00,https://www.amazon.in/s?k=8+core+thin+cable,Amazon.in,Requested,Headband cable between cups (price is an estimate; replace with your cart price)
+JST-SH 1.0 mm pre-crimped cable kit,Part,1,4.00,4.00,https://www.amazon.in/s?k=JST+SH+1.0mm+pre+crimped+cable,Amazon.in,Requested,Mic board cables (price is an estimate; replace with your cart price)
+Industrial earmuff (same model as v1),Part,1,4.00,4.00,https://www.amazon.in/s?k=industrial+safety+earmuff+red,Amazon.in,Requested,New shell so v1 stays intact for comparison (price is an estimate; replace with your cart price)
+PETG filament 1 kg,Part,1,15.00,15.00,https://www.amazon.in/s?k=PETG+filament+1kg+1.75mm,Amazon.in,Requested,Enclosure parts; drop if college printer has filament (price is an estimate; replace with your cart price)
+UNI-T UT353 sound level meter,Tool,1,25.00,25.00,https://probots.co.in/ut353-mini-sound-meter-uni-t-audio-noise-decibel-measurement.html,Probots,Requested,Measured dB numbers for test T2 (price is an estimate; replace with your cart price)
+Heat shrink and spiral cable wrap,Part,1,3.00,3.00,https://www.amazon.in/s?k=heat+shrink+tube+kit,Amazon.in,Requested,Cable finish (price is an estimate; replace with your cart price)
+"Soldering iron, multimeter",Tool,1,0.00,0.00,,,Already own,Change to Requested with a price if you don't own them
+Total,,,,195.30,,,,
+Grant total,,,,195.30,,,,
