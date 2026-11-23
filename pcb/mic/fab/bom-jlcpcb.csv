@@ -1,0 +1,5 @@
+Comment,Designator,Footprint,LCSC Part #,MPN
+100n,C1,C_0603_1608Metric,,
+JST-SH 5 (I2S_SD),J1,JST_SH_SM05B-SRSS-TB_1x05-1MP_P1.00mm_Horizontal,,SM05B-SRSS-TB
+"L/R: bridge 1-2 left, 2-3 right",JP1,SolderJumper-3_P1.3mm_Open_RoundedPad1.0x1.5mm,,
+ICS-43434,U1,InvenSense_ICS-43434-6_3.5x2.65mm,C5656610,ICS-43434

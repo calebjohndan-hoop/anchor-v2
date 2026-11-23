@@ -37,11 +37,19 @@ Full plan: [docs/DESIGN.md](docs/DESIGN.md)
 
 ### Schematic and PCB
 
-_TODO: add KiCad schematic and PCB screenshots once drawn (files go in [pcb/](pcb/))._
+Three KiCad 7 boards: the main board (51 x 38 mm, left cup), a mic board (12 x 13 mm, four needed) and a right cup hub (30 x 22 mm). Schematics, layouts, Gerbers and JLCPCB BOM and position files are in [pcb/](pcb/).
+
+![PCBs](docs/images/pcbs-front.png)
+
+![Main board schematic](docs/images/schematic-main.png)
+
+**Status:** routed and DRC clean (no clearance, unconnected or courtyard errors), but this is a first revision that has **not been reviewed by a second person or built**. See [pcb/README.md](pcb/README.md) for the checks to do before ordering.
 
 ### 3D model
 
-_TODO: add a screenshot of the full Onshape assembly (link goes in [cad/](cad/))._
+Enclosure parts are parametric CadQuery models ([cad/anchor_cad.py](cad/anchor_cad.py)) with STEP files for Onshape or any CAD tool. Cup sizes are placeholders until the earmuff is measured.
+
+![Enclosure parts](docs/images/cad-parts.png)
 
 ## Repo layout
 
@@ -55,7 +63,7 @@ _TODO: add a screenshot of the full Onshape assembly (link goes in [cad/](cad/))
 
 ## Credits
 
-v1 was built with my college teammates.
+v1 was built with my college teammates. I used Claude (an AI assistant) to write this v2 design plan, generate the CAD models and lay out the PCBs. I am reviewing them before anything is ordered.
 
 ## Bill of materials
 
@@ -66,12 +74,12 @@ Prices are estimates and will be replaced with the real cart prices before revie
 | [ESP32-S3-WROOM-1-N16R8 module](https://www.lcsc.com/product-detail/C2913202.html) | 2 | 5.50 | 11.00 | LCSC / JLCPCB | Requested |
 | [MAX98357AETE+T I2S class D amplifier](https://www.lcsc.com/product-image/C910544.html) | 4 | 2.00 | 8.00 | LCSC / JLCPCB | Requested |
 | [ICS-43434 I2S MEMS microphone](https://www.lcsc.com/product-detail/C5656610.html) | 10 | 2.50 | 25.00 | LCSC / JLCPCB | Requested |
-| [TP4056 LiPo charger IC](https://www.lcsc.com/search?q=TP4056) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
+| [MCP73831T-2ACI/OT LiPo charger IC](https://www.lcsc.com/search?q=MCP73831T-2ACI%2FOT) | 2 | 0.60 | 1.20 | LCSC / JLCPCB | Requested |
 | [AP2112K-3.3 LDO regulator](https://www.lcsc.com/search?q=AP2112K-3.3TRG1) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
 | [USBLC6-2SC6 USB ESD protection](https://www.lcsc.com/search?q=USBLC6-2SC6) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
 | [USB-C 16-pin receptacle](https://www.lcsc.com/search?q=TYPE-C%2016PIN) | 2 | 0.30 | 0.60 | LCSC / JLCPCB | Requested |
-| [DMG2305UX P-MOSFET + SS14 Schottky (load sharing)](https://www.lcsc.com/search?q=DMG2305UX) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
-| [JST-SH 5-pin SMD connector](https://www.lcsc.com/search?q=SM05B-SRSS-TB) | 14 | 0.15 | 2.10 | LCSC / JLCPCB | Requested |
+| [AO3401A P-MOSFET + SS14 Schottky (load sharing)](https://www.lcsc.com/search?q=AO3401A) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
+| [JST-SH SMD connectors (2, 5 and 8 pin)](https://www.lcsc.com/search?q=SM05B-SRSS-TB) | 20 | 0.15 | 3.00 | LCSC / JLCPCB | Requested |
 | [Passives (resistors, capacitors) lot](https://www.lcsc.com/search?q=0402%20resistor) | 1 | 3.00 | 3.00 | LCSC / JLCPCB | Requested |
 | [Buttons, slide switch, LEDs](https://www.lcsc.com/search?q=tactile%20switch) | 1 | 2.00 | 2.00 | LCSC / JLCPCB | Requested |
 | [PCB fabrication: main, mic, hub boards (5 each)](https://jlcpcb.com/) | 1 | 8.00 | 8.00 | JLCPCB | Requested |
@@ -85,6 +93,6 @@ Prices are estimates and will be replaced with the real cart prices before revie
 | [PETG filament 1 kg](https://www.amazon.in/s?k=PETG+filament+1kg+1.75mm) | 1 | 15.00 | 15.00 | Amazon.in | Requested |
 | [UNI-T UT353 sound level meter](https://probots.co.in/ut353-mini-sound-meter-uni-t-audio-noise-decibel-measurement.html) | 1 | 25.00 | 25.00 | Probots | Requested |
 | [Heat shrink and spiral cable wrap](https://www.amazon.in/s?k=heat+shrink+tube+kit) | 1 | 3.00 | 3.00 | Amazon.in | Requested |
-| Soldering iron, multimeter | 1 | 0.00 | 0.00 |  | Requested |
-| **Total** |  |  | **195.30** |  |  |
-| **Grant total** |  |  | **195.30** |  |  |
+| [Soldering iron and multimeter](https://www.amazon.in/s?k=soldering+iron+kit+with+multimeter) | 1 | 25.00 | 25.00 | Amazon.in | Requested |
+| **Total** |  |  | **222.00** |  |  |
+| **Grant total** |  |  | **222.00** |  |  |

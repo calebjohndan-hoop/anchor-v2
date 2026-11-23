@@ -2,7 +2,7 @@
 
 ANCHOR is a noise cancelling earmuff for factory and construction workers. It cancels steady machine noise and lets alarms and voices through. v1 was a low cost proof of concept (about ₹2,200) built on a breadboard. This document is the plan for v2: a two-ear build on custom PCBs, with the electronics inside the ear cups and its own battery.
 
-Status: **design stage.** Nothing in this document has been built yet. Each "target" below is a goal to be measured, not a result.
+Status: **design stage.** The schematics, PCB layouts ([pcb/](../pcb/)) and enclosure CAD ([cad/](../cad/)) are drawn, but nothing in v2 has been built yet. Each "target" below is a goal to be measured, not a result.
 
 ---
 
@@ -65,7 +65,7 @@ Status: **design stage.** Nothing in this document has been built yet. Each "tar
 | Microphones | INMP441 breakouts (61 dBA SNR) | ICS-43434 on tiny custom boards (65 dBA SNR) | Lower noise, smaller, same I2S format; 120 dB SPL max input suits loud factories |
 | Amplifier | 1 x MAX98357A breakout | 2 x MAX98357A on the main PCB | One per ear; same chip and code as v1 |
 | Speakers | 40 mm 8 ohm 0.5 W | 40 mm 32 ohm headphone drivers | Made for a sealed ear cup, better low frequency output where machine hum lives |
-| Power | USB power bank | 1000 mAh 1S LiPo, TP4056 charger, AP2112K 3.3 V regulator | Wearable, charges from USB-C |
+| Power | USB power bank | 1000 mAh 1S LiPo, MCP73831 charger (500 mA), AP2112K 3.3 V regulator | Wearable, charges from USB-C |
 | Earmuff | Red industrial earmuff (27 dB SNR) | A second earmuff of the same model | Keeps v1 intact so v1 and v2 can be compared side by side |
 
 **Alternative considered:** an audio codec (for example WM8960) with analog mics. It could give lower delay, but it means new drivers and analog layout. I will only switch if I2S digital mics cannot meet R2. Decided after Test T1.
@@ -100,7 +100,7 @@ Compute check: two ears, a 128-tap control filter and a 64-tap secondary path mo
 | 47 | LED_STATUS | out | Through resistor |
 | 48 | LED_MODE | out | Through resistor |
 | 1 | VBAT_SENSE | analog in | 100 kΩ / 100 kΩ divider from battery |
-| 2 | CHG_STAT | in | TP4056 CHRG pin (open drain), 10 kΩ pull-up |
+| 2 | CHG_STAT | in | MCP73831 STAT pin through a 10 kΩ / 20 kΩ divider (STAT swings to 5 V) |
 | 19, 20 | USB D-, D+ | USB | Native USB, used for flashing and serial |
 | 0 | BOOT | in | Boot button to GND |
 | EN | RESET | in | Reset button, 10 kΩ pull-up, 1 µF to GND |
@@ -115,9 +115,9 @@ Compute check: two ears, a 128-tap control filter and a 64-tap secondary path mo
 ## 7. Power design
 
 ```
-USB-C 5 V ──> TP4056 charger (RPROG 2 kΩ ≈ 600 mA) ──> LiPo 1000 mAh
+USB-C 5 V ──> MCP73831 charger (RPROG 2 kΩ = 500 mA) ──> LiPo 1000 mAh
    │                                                    │
-   └─> SS14 diode ──> VSYS <── DMG2305UX P-MOSFET <──────┘
+   └─> SS14 diode ──> VSYS <── AO3401A P-MOSFET <────────┘
                        │      (battery cut off from VSYS while USB is in)
                        ├─> slide switch ──> VSYS_SW
                        │                     ├─> MAX98357A x2 (2.5 to 5.5 V)
@@ -134,18 +134,18 @@ USB-C 5 V ──> TP4056 charger (RPROG 2 kΩ ≈ 600 mA) ──> LiPo 1000 mAh
 
 | Board | Size target | Qty to order | Contents |
 |---|---|---|---|
-| Main | about 45 x 35 mm, fits the left cup | 5 made, 2 assembled | ESP32-S3 module, 2 x MAX98357A, TP4056, AP2112K, USB-C, ESD, 2 buttons, switch, 2 LEDs, connectors |
-| Mic | about 10 x 10 mm | 10 assembled (8 used, 2 spare) | ICS-43434, 0.1 µF, 5-pin JST-SH, L/R solder jumper, sound port hole |
-| Right hub | about 20 x 15 mm | 5 made, hand soldered | 8-pin cable pads, 2 mic connectors, speaker pads |
+| Main | 51 x 38 mm, turned 90 degrees in the left cup | 5 made, 2 assembled | ESP32-S3 module, 2 x MAX98357A, MCP73831, AP2112K, USB-C, ESD, 3 buttons, power switch, 2 LEDs, connectors |
+| Mic | 12 x 13 mm | 10 assembled (8 used, 2 spare) | ICS-43434, 0.1 µF, 5-pin JST-SH, L/R solder jumper (bridge 1-2 left, 2-3 right), sound port hole |
+| Right hub | 30 x 22 mm | 5 made, hand soldered | 8-pin JST-SH from the main board, 2 mic sockets, 2-pin speaker socket |
 
-Connectors: mics on 5-pin JST-SH (3V3, GND, BCLK, WS, SD); battery on 2-pin JST-PH; speakers on 2-pin JST-PH or pads.
+Connectors: mics on 5-pin JST-SH (3V3, GND, BCLK, WS, SD); battery on 2-pin JST-PH; speakers on 2-pin JST-SH; main board to right cup on 8-pin JST-SH.
 
 The 8-wire headband cable carries 3V3, GND, BCLK, WS, REF data, ERR data, SPK_R+ and SPK_R-.
 
 Layout rules:
 - The ICS-43434 is bottom ported, so each mic board needs a hole under the sound port, sized from the datasheet.
 - 33 Ω series resistor on BCLK and WS at the ESP32-S3, because they run about 35 cm to the right cup. Keep a ground wire beside the clock in the cable.
-- Keep the ESP32-S3 antenna area clear of copper (radio is off, but follow the module guide).
+- The radio is not used, so the module's antenna keepout was removed to fit the board. If Wi-Fi or Bluetooth is ever needed, the layout must be redone with the keepout.
 - Class D amp outputs short, and away from mic lines.
 - Assembly by JLCPCB, because the ICS-43434 LGA package and the MAX98357A TQFN package are hard to hand solder.
 
