@@ -68,6 +68,7 @@ def build(name, outdir, parts, place, size, corner=2.0, drop_rule_areas=(), rout
         lib, fpn = p.footprint.split(":")
         fp = pcbnew.FootprintLoad(f"{FP}/{lib}.pretty", fpn)
         fp.SetReference(p.ref); fp.SetValue(p.value)
+        ref = fp.Reference(); ref.SetTextSize(VECTOR2I(FromMM(0.8), FromMM(0.8))); ref.SetTextThickness(FromMM(0.12))
         for k in ("MPN", "LCSC"):
             v = getattr(p, k.lower())
             if v:

@@ -36,8 +36,8 @@ Status: **design stage.** The schematics, PCB layouts ([pcb/](../pcb/)) and encl
 
 ![Block diagram](images/block-diagram.png)
 
-- **Left cup:** main PCB (ESP32-S3 module, two amplifiers, charger, regulator, USB-C, button, LEDs), the LiPo battery, left speaker, left REF mic (outside) and left ERR mic (inside).
-- **Right cup:** small hub PCB, right speaker, right REF mic and right ERR mic.
+- **Left cup:** main PCB (ESP32-S3 module, left amplifier, charger, regulator, USB-C, buttons, LEDs), the LiPo battery, left speaker, left REF mic (outside) and left ERR mic (inside).
+- **Right cup:** hub PCB with the right amplifier, right speaker, right REF mic and right ERR mic.
 - **Headband:** one 8-wire cable between the cups. This replaces the v1 breadboard and jumper wires.
 
 ### Signal path (per ear)
@@ -63,7 +63,7 @@ Status: **design stage.** The schematics, PCB layouts ([pcb/](../pcb/)) and encl
 |---|---|---|---|
 | Processor | ESP32-S3 DevKitC-1 N16R8 | ESP32-S3-WROOM-1-N16R8 module on my own PCB | Same chip, so v1 firmware ports over; the module is much smaller than the DevKit |
 | Microphones | INMP441 breakouts (61 dBA SNR) | ICS-43434 on tiny custom boards (65 dBA SNR) | Lower noise, smaller, same I2S format; 120 dB SPL max input suits loud factories |
-| Amplifier | 1 x MAX98357A breakout | 2 x MAX98357A on the main PCB | One per ear; same chip and code as v1 |
+| Amplifier | 1 x MAX98357A breakout | 2 x MAX98357A, one in each cup | One per ear; same chip and code as v1. The right one sits on the hub so no speaker current crosses the headband |
 | Speakers | 40 mm 8 ohm 0.5 W | 40 mm 32 ohm headphone drivers | Made for a sealed ear cup, better low frequency output where machine hum lives |
 | Power | USB power bank | 1000 mAh 1S LiPo, MCP73831 charger (500 mA), AP2112K 3.3 V regulator | Wearable, charges from USB-C |
 | Earmuff | Red industrial earmuff (27 dB SNR) | A second earmuff of the same model | Keeps v1 intact so v1 and v2 can be compared side by side |
@@ -119,13 +119,16 @@ USB-C 5 V ──> MCP73831 charger (RPROG 2 kΩ = 500 mA) ──> LiPo 1000 mAh
    │                                                    │
    └─> SS14 diode ──> VSYS <── AO3401A P-MOSFET <────────┘
                        │      (battery cut off from VSYS while USB is in)
-                       ├─> slide switch ──> VSYS_SW
-                       │                     ├─> MAX98357A x2 (2.5 to 5.5 V)
-                       │                     └─> AP2112K-3.3 ──> 3V3: ESP32-S3, 4 mics
+                       ├─> left MAX98357A (shut down by firmware when off)
+                       └─> AP2112K-3.3 ──> 3V3: ESP32-S3, 4 mics, right MAX98357A (via ferrite bead)
+                              ▲
+                       slide switch drives the regulator EN pin only (100 kΩ pull-down = off)
 ```
 
 - USB-C: 5.1 kΩ resistors on CC1 and CC2, USBLC6-2SC6 ESD protection on D+ and D-.
 - Battery with a built-in protection circuit (most 1S LiPo packs have one). Firmware also shuts down at 3.5 V, because the regulator drops out below about that.
+- Reverse battery protection: a P-MOSFET (AO3401A, gate to GND) in the battery line, because cheap LiPo packs sometimes come with the plug wired backwards.
+- The power switch only pulls the regulator's EN pin high, so it carries almost no current. With the regulator off, the left amp's SD_MODE falls low through its internal pull-down and the amp shuts down.
 - Bulk capacitors: 10 µF and 0.1 µF at each amp, 22 µF and 0.1 µF at the module.
 
 **Rough runtime estimate (R6):** ESP32-S3 at 240 MHz with radio off about 60 mA, mics about 2 mA, amps idle about 5 mA plus audio. Around 100 to 120 mA in total gives roughly 8 hours from 1000 mAh. This is a guess until Test T5. If it falls short, the upgrade is a buck-boost regulator (for example TPS63001) to use the whole battery.
@@ -134,13 +137,13 @@ USB-C 5 V ──> MCP73831 charger (RPROG 2 kΩ = 500 mA) ──> LiPo 1000 mAh
 
 | Board | Size target | Qty to order | Contents |
 |---|---|---|---|
-| Main | 51 x 38 mm, turned 90 degrees in the left cup | 5 made, 2 assembled | ESP32-S3 module, 2 x MAX98357A, MCP73831, AP2112K, USB-C, ESD, 3 buttons, power switch, 2 LEDs, connectors |
+| Main | 51 x 38 mm, turned 90 degrees in the left cup | 5 made, 2 assembled | ESP32-S3 module, left MAX98357A, MCP73831, AP2112K, USB-C, ESD, reverse battery protection, 3 buttons, power switch, 2 LEDs, connectors |
 | Mic | 12 x 13 mm | 10 assembled (8 used, 2 spare) | ICS-43434, 0.1 µF, 5-pin JST-SH, L/R solder jumper (bridge 1-2 left, 2-3 right), sound port hole |
-| Right hub | 30 x 22 mm | 5 made, hand soldered | 8-pin JST-SH from the main board, 2 mic sockets, 2-pin speaker socket |
+| Right hub | 30 x 22 mm | 5 made, 2 assembled | Right MAX98357A (3.3 V through a ferrite bead), 8-pin JST-SH from the main board, 2 mic sockets, 2-pin speaker socket |
 
 Connectors: mics on 5-pin JST-SH (3V3, GND, BCLK, WS, SD); battery on 2-pin JST-PH; speakers on 2-pin JST-SH; main board to right cup on 8-pin JST-SH.
 
-The 8-wire headband cable carries 3V3, GND, BCLK, WS, REF data, ERR data, SPK_R+ and SPK_R-.
+The 8-wire headband cable carries 3V3, GND, BCLK, WS, REF data, ERR data, speaker data (I2S DOUT) and the right amp's enable. Only digital signals cross the headband: the right amplifier is on the hub, so the class D speaker output (fast switching edges) never runs next to the mic clock and data lines.
 
 Layout rules:
 - The ICS-43434 is bottom ported, so each mic board needs a hole under the sound port, sized from the datasheet.
@@ -205,7 +208,7 @@ Measurements to take from the earmuff before modelling: cup inner depth, cup inn
 |---|---|---|
 | I2S1 slave input does not stay aligned with I2S0 | Two-ear ANC fails | Test B1 first; fallback is a TDM microphone (ICS-52000) on one data line |
 | Delay stays above 1 ms | Cancelling limited to steady hum | Smaller blocks; fallback is a codec (section 4) |
-| Long clock lines to the right cup pick up noise | Clicks, wrong samples | Series resistors, ground beside clock, shorter cable |
+| Long clock lines to the right cup pick up noise | Clicks, wrong samples | Series resistors, ground beside clock, no analog or speaker signals in the cable |
 | Battery life under 8 hours | Not a full shift | Buck-boost regulator, lower clock speed |
 | Classifier wrong on the headset | Alarms missed or noise let through | Train on clips recorded through the headset's own mic |
 | Hear-through too loud | Harms hearing | Firmware output limiter and gain cap, tested in T6 |

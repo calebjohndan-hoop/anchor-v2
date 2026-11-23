@@ -20,6 +20,15 @@ def C(ref, val, a, b="GND", fp=None):
     return Part(ref, "Device:C", val, fp or (C0805 if val in ("10u", "22u") else C0603), {"1": a, "2": b})
 
 
+def amp(ref, sd, p, n, vdd):
+    return Part(ref, "Audio:MAX98357A", "MAX98357A", "Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm",
+                {"DIN": "I2S_DOUT", "GAIN_SLOT": vdd, "GND": "GND", "PAD": "GND", "~{SD_MODE}": sd, "NC": None,
+                 "VDD": vdd, "BCLK": "I2S_BCLK", "LRCLK": "I2S_WS", "OUTP": p, "OUTN": n}, mpn="MAX98357AETE+T", lcsc="C910544")
+
+
+CABLE = {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": "I2S_DIN_REF", "6": "I2S_DIN_ERR", "7": "I2S_DOUT", "8": "AMP_R_SD"}
+
+
 def mic_conn(ref, data):
     return Part(ref, "Connector_Generic:Conn_01x05", f"JST-SH 5 ({data})", SH5,
                 {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": data}, mpn="SM05B-SRSS-TB")
@@ -40,8 +49,11 @@ def mic_board():
 # ---------------------------------------------------------------- right cup hub
 def hub_board():
     return [
-        Part("J1", "Connector_Generic:Conn_01x08", "JST-SH 8 to main board", SH8,
-             {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": "I2S_DIN_REF", "6": "I2S_DIN_ERR", "7": "SPK_R_P", "8": "SPK_R_N"}, mpn="SM08B-SRSS-TB"),
+        Part("J1", "Connector_Generic:Conn_01x08", "JST-SH 8 to main board", SH8, CABLE, mpn="SM08B-SRSS-TB"),
+        # right amplifier lives here so only digital audio crosses the headband
+        amp("U1", "AMP_R_SD", "SPK_R_P", "SPK_R_N", "AMP_VDD"),
+        Part("FB1", "Device:FerriteBead_Small", "600R@100MHz", "Inductor_SMD:L_0603_1608Metric", {"1": "+3V3", "2": "AMP_VDD"}),
+        C("C3", "10u", "AMP_VDD"), C("C4", "100n", "AMP_VDD"),
         mic_conn("J2", "I2S_DIN_REF"),
         mic_conn("J3", "I2S_DIN_ERR"),
         Part("J4", "Connector_Generic:Conn_01x02", "Speaker R (JST-SH 2)", SH2, {"1": "SPK_R_P", "2": "SPK_R_N"}, mpn="SM02B-SRSS-TB"),
@@ -62,10 +74,6 @@ def main_board():
               "IO38", "IO39", "IO40", "IO41", "IO42", "IO45", "IO46"]:
         esp[n] = None
 
-    def amp(ref, sd, p, n):
-        return Part(ref, "Audio:MAX98357A", "MAX98357A", "Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm",
-                    {"DIN": "I2S_DOUT", "GAIN_SLOT": "VSYS_SW", "GND": "GND", "PAD": "GND", "~{SD_MODE}": sd, "NC": None,
-                     "VDD": "VSYS_SW", "BCLK": "I2S_BCLK", "LRCLK": "I2S_WS", "OUTP": p, "OUTN": n}, mpn="MAX98357AETE+T", lcsc="C910544")
 
     return [
         # USB-C and protection
@@ -85,12 +93,16 @@ def main_board():
         Part("Q1", "Transistor_FET:AO3401A", "AO3401A", "Package_TO_SOT_SMD:SOT-23", {"G": "VBUS", "S": "VSYS", "D": "VBAT"}, mpn="AO3401A"),
         R("R3", "100k", "VBUS", "GND"),
         C("C13", "10u", "VSYS"),
-        Part("J2", "Connector_Generic:Conn_01x02", "Battery (JST-PH 2)", PH2, {"1": "VBAT", "2": "GND"}, mpn="S2B-PH-SM4-TB"),
-        Part("SW1", "Switch:SW_SPDT", "Power", "Button_Switch_SMD:SW_SPDT_PCM12", {"A": "VSYS", "B": "VSYS_SW", "C": None}, mpn="PCM12SMTR"),
+        Part("J2", "Connector_Generic:Conn_01x02", "Battery (JST-PH 2)", PH2, {"1": "BAT_P", "2": "GND"}, mpn="S2B-PH-SM4-TB"),
+        # reverse battery protection: P-MOSFET conducts both ways when the battery is the right way round
+        Part("Q2", "Transistor_FET:AO3401A", "AO3401A", "Package_TO_SOT_SMD:SOT-23", {"G": "GND", "D": "BAT_P", "S": "VBAT"}, mpn="AO3401A"),
+        # power switch only drives the regulator enable, so it carries no load current
+        Part("SW1", "Switch:SW_SPDT", "Power", "Button_Switch_SMD:SW_SPDT_PCM12", {"A": "VSYS", "B": "LDO_EN", "C": None}, mpn="PCM12SMTR"),
+        R("R18", "100k", "LDO_EN", "GND"),
         # 3.3 V
         Part("U3", "Regulator_Linear:AP2112K-3.3", "AP2112K-3.3", "Package_TO_SOT_SMD:SOT-23-5",
-             {"VIN": "VSYS_SW", "GND": "GND", "EN": "VSYS_SW", "NC": None, "VOUT": "+3V3"}, mpn="AP2112K-3.3TRG1"),
-        C("C3", "1u", "VSYS_SW"), C("C4", "10u", "+3V3"), C("C5", "22u", "+3V3"), C("C6", "100n", "+3V3"),
+             {"VIN": "VSYS", "GND": "GND", "EN": "LDO_EN", "NC": None, "VOUT": "+3V3"}, mpn="AP2112K-3.3TRG1"),
+        C("C3", "1u", "VSYS"), C("C4", "10u", "+3V3"), C("C5", "22u", "+3V3"), C("C6", "100n", "+3V3"),
         # battery sense
         R("R5", "100k", "VBAT", "VBAT_SENSE"), R("R6", "100k", "VBAT_SENSE", "GND"), C("C8", "100n", "VBAT_SENSE"),
         # MCU
@@ -111,15 +123,13 @@ def main_board():
         R("R9", "33", "BCLK_MCU", "I2S_BCLK"), R("R10", "33", "WS_MCU", "I2S_WS"),
         # amplifiers: SD_MODE level picks the channel (10k = left, 220k = right, low = shutdown)
         R("R11", "10k", "AMP_SD", "AMP_L_SD"), R("R12", "220k", "AMP_SD", "AMP_R_SD"),
-        amp("U5", "AMP_L_SD", "SPK_L_P", "SPK_L_N"),
-        amp("U6", "AMP_R_SD", "SPK_R_P", "SPK_R_N"),
-        C("C9", "10u", "VSYS_SW"), C("C10", "100n", "VSYS_SW"), C("C11", "10u", "VSYS_SW"), C("C12", "100n", "VSYS_SW"),
+        amp("U5", "AMP_L_SD", "SPK_L_P", "SPK_L_N", "VSYS"),
+        C("C9", "10u", "VSYS"), C("C10", "100n", "VSYS"),
         # connectors
         Part("J3", "Connector_Generic:Conn_01x02", "Speaker L (JST-SH 2)", SH2, {"1": "SPK_L_P", "2": "SPK_L_N"}, mpn="SM02B-SRSS-TB"),
         mic_conn("J4", "I2S_DIN_REF"),
         mic_conn("J5", "I2S_DIN_ERR"),
-        Part("J6", "Connector_Generic:Conn_01x08", "JST-SH 8 to right cup", SH8,
-             {"1": "+3V3", "2": "GND", "3": "I2S_BCLK", "4": "I2S_WS", "5": "I2S_DIN_REF", "6": "I2S_DIN_ERR", "7": "SPK_R_P", "8": "SPK_R_N"}, mpn="SM08B-SRSS-TB"),
+        Part("J6", "Connector_Generic:Conn_01x08", "JST-SH 8 to right cup", SH8, CABLE, mpn="SM08B-SRSS-TB"),
         Part("H1", "Mechanical:MountingHole", "M2", MH, {}), Part("H2", "Mechanical:MountingHole", "M2", MH, {}),
     ]
 

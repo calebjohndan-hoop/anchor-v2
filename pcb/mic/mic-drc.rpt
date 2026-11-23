@@ -1,27 +1,27 @@
 ** Drc report for out/mic/mic.kicad_pcb **
-** Created on 2026-11-23 15:51:45 **
+** Created on 2026-11-23 17:00:05 **
 
 ** Found 6 DRC violations **
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(6.0000 mm, 9.9000 mm): Footprint J1
-[lib_footprint_issues]: The current configuration does not include the library ''.
-    Local override; Severity: warning
-    @(4.0000 mm, 3.0000 mm): Footprint U1
+    @(8.6000 mm, 1.5000 mm): Footprint C1
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
     @(8.6000 mm, 4.6000 mm): Footprint JP1
 [lib_footprint_issues]: The current configuration does not include the library ''.
     Local override; Severity: warning
-    @(8.6000 mm, 1.5000 mm): Footprint C1
-[silk_edge_clearance]: Silkscreen clipped by board edge
-    Rule: board setup constraints silk; Severity: warning
-    @(2.0000 mm, 0.0000 mm): Line on Edge.Cuts
-    @(4.0000 mm, 0.0000 mm): Reference 'U1'
+    @(4.0000 mm, 3.0000 mm): Footprint U1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(6.0000 mm, 9.9000 mm): Footprint J1
 [silk_edge_clearance]: Silkscreen clipped by board edge
     Rule: board setup constraints silk; Severity: warning
     @(2.0000 mm, 0.0000 mm): Line on Edge.Cuts
     @(8.6000 mm, 0.0700 mm): Reference 'C1'
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; Severity: warning
+    @(2.0000 mm, 0.0000 mm): Line on Edge.Cuts
+    @(4.0000 mm, 0.0000 mm): Reference 'U1'
 
 ** Found 0 unconnected pads **
 

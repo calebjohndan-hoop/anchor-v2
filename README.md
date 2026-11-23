@@ -20,7 +20,7 @@ I already built a rough v1 (about ₹2,200) for a college design thinking course
 |---|---|---|
 | Ears with cancelling | 1 | 2 |
 | Electronics | Breadboard on the headband | Custom PCBs inside the cups |
-| Wiring | About 30 jumper wires | One 8-wire cable |
+| Wiring | About 30 jumper wires | One 8-wire cable, digital signals only |
 | Power | USB power bank | 1000 mAh LiPo, USB-C charging |
 | Mic to speaker delay | 3.5 to 4.5 ms (measured) | Under 1 ms (target) |
 | Noise reduction | Not measured | Measured with a sound level meter |
@@ -67,21 +67,21 @@ v1 was built with my college teammates. I used Claude (an AI assistant) to write
 
 ## Bill of materials
 
-Prices are estimates at Indian retail prices, without shipping, and will be replaced with the real cart prices before review. Full list with notes: [BOM.csv](BOM.csv).
+Prices are estimates without shipping: LCSC prices for parts JLCPCB assembles, Indian retail prices for parts bought locally. They will be replaced with the real cart prices before review. Full list with notes: [BOM.csv](BOM.csv).
 
 | Part | Qty | Unit (USD) | Total (USD) | Vendor | Funding |
 |---|---|---|---|---|---|
-| [ESP32-S3-WROOM-1-N16R8 module](https://www.lcsc.com/product-detail/C2913202.html) | 2 | 7.50 | 15.00 | LCSC / JLCPCB | Requested |
-| [MAX98357AETE+T I2S class D amplifier](https://www.lcsc.com/product-image/C910544.html) | 4 | 3.00 | 12.00 | LCSC / JLCPCB | Requested |
-| [ICS-43434 I2S MEMS microphone](https://www.lcsc.com/product-detail/C5656610.html) | 10 | 3.50 | 35.00 | LCSC / JLCPCB | Requested |
-| [MCP73831T-2ACI/OT LiPo charger IC](https://www.lcsc.com/search?q=MCP73831T-2ACI%2FOT) | 2 | 1.60 | 3.20 | LCSC / JLCPCB | Requested |
-| [AP2112K-3.3 LDO regulator](https://www.lcsc.com/search?q=AP2112K-3.3TRG1) | 2 | 1.20 | 2.40 | LCSC / JLCPCB | Requested |
-| [USBLC6-2SC6 USB ESD protection](https://www.lcsc.com/search?q=USBLC6-2SC6) | 2 | 1.20 | 2.40 | LCSC / JLCPCB | Requested |
-| [USB-C 16-pin receptacle](https://www.lcsc.com/search?q=TYPE-C%2016PIN) | 2 | 1.30 | 2.60 | LCSC / JLCPCB | Requested |
-| [AO3401A P-MOSFET + SS14 Schottky (load sharing)](https://www.lcsc.com/search?q=AO3401A) | 2 | 1.20 | 2.40 | LCSC / JLCPCB | Requested |
-| [JST-SH SMD connectors (2, 5 and 8 pin)](https://www.lcsc.com/search?q=SM05B-SRSS-TB) | 20 | 1.15 | 23.00 | LCSC / JLCPCB | Requested |
-| [Passives (resistors, capacitors) lot](https://www.lcsc.com/search?q=0402%20resistor) | 1 | 4.00 | 4.00 | LCSC / JLCPCB | Requested |
-| [Buttons, slide switch, LEDs](https://www.lcsc.com/search?q=tactile%20switch) | 1 | 3.00 | 3.00 | LCSC / JLCPCB | Requested |
+| [ESP32-S3-WROOM-1-N16R8 module](https://www.lcsc.com/product-detail/C2913202.html) | 2 | 5.50 | 11.00 | LCSC / JLCPCB | Requested |
+| [MAX98357AETE+T I2S class D amplifier](https://www.lcsc.com/product-image/C910544.html) | 4 | 2.00 | 8.00 | LCSC / JLCPCB | Requested |
+| [ICS-43434 I2S MEMS microphone](https://www.lcsc.com/product-detail/C5656610.html) | 10 | 2.50 | 25.00 | LCSC / JLCPCB | Requested |
+| [MCP73831T-2ACI/OT LiPo charger IC](https://www.lcsc.com/search?q=MCP73831T-2ACI%2FOT) | 2 | 0.60 | 1.20 | LCSC / JLCPCB | Requested |
+| [AP2112K-3.3 LDO regulator](https://www.lcsc.com/search?q=AP2112K-3.3TRG1) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
+| [USBLC6-2SC6 USB ESD protection](https://www.lcsc.com/search?q=USBLC6-2SC6) | 2 | 0.20 | 0.40 | LCSC / JLCPCB | Requested |
+| [USB-C 16-pin receptacle](https://www.lcsc.com/search?q=TYPE-C%2016PIN) | 2 | 0.30 | 0.60 | LCSC / JLCPCB | Requested |
+| [AO3401A P-MOSFETs + SS14 Schottky](https://www.lcsc.com/search?q=AO3401A) | 4 | 0.20 | 0.80 | LCSC / JLCPCB | Requested |
+| [JST-SH SMD connectors (2, 5 and 8 pin)](https://www.lcsc.com/search?q=SM05B-SRSS-TB) | 20 | 0.15 | 3.00 | LCSC / JLCPCB | Requested |
+| [Passives (resistors, capacitors) lot](https://www.lcsc.com/search?q=0402%20resistor) | 1 | 3.00 | 3.00 | LCSC / JLCPCB | Requested |
+| [Buttons, slide switch, LEDs](https://www.lcsc.com/search?q=tactile%20switch) | 1 | 2.00 | 2.00 | LCSC / JLCPCB | Requested |
 | [PCB fabrication: main, mic, hub boards (5 each)](https://jlcpcb.com/) | 1 | 8.00 | 8.00 | JLCPCB | Requested |
 | [PCB assembly fees (setup, stencil, extended part fees)](https://jlcpcb.com/) | 1 | 35.00 | 35.00 | JLCPCB | Requested |
 | [3.7 V 1000 mAh LiPo (KP 503450) with protection](https://www.theengineerstore.in/products/3-7v-1000mah-lithium-polymer-lipo-rechargeable-battery-model-kp-503450) | 2 | 5.00 | 10.00 | The Engineer Store | Requested |
@@ -93,5 +93,5 @@ Prices are estimates at Indian retail prices, without shipping, and will be repl
 | [UNI-T UT353 sound level meter](https://probots.co.in/ut353-mini-sound-meter-uni-t-audio-noise-decibel-measurement.html) | 1 | 27.00 | 27.00 | Probots | Requested |
 | [Heat shrink and spiral cable wrap](https://www.amazon.in/s?k=heat+shrink+tube+kit) | 1 | 4.00 | 4.00 | Amazon.in | Requested |
 | [Soldering iron and multimeter](https://www.amazon.in/s?k=soldering+iron+kit+with+multimeter) | 1 | 27.00 | 27.00 | Amazon.in | Requested |
-| **Total** |  |  | **263.00** |  |  |
-| **Grant total** |  |  | **263.00** |  |  |
+| **Total** |  |  | **213.40** |  |  |
+| **Grant total** |  |  | **213.40** |  |  |
